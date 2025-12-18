@@ -1,0 +1,18 @@
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres_outbox
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: orders
+      POSTGRES_USER: orders
+      POSTGRES_PASSWORD: orders
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  pgdata:
