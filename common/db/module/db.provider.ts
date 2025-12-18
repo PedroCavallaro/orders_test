@@ -23,6 +23,10 @@ export class DatabaseProvider extends Kysely<Database> {
     })
   }
 
+  isPrimaryKeyError(e: any) {
+    return e?.code == 23505
+  }
+
   static getInstance() {
     if (!DatabaseProvider.instance) {
       DatabaseProvider.instance = new DatabaseProvider()

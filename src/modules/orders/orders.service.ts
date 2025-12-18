@@ -1,6 +1,12 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common'
-import { OrderPaidEventDTO } from './dto'
-import { OrderEvents } from './enum'
+import {
+  ForbiddenException,
+  HttpException,
+  Injectable,
+  Logger,
+  NotFoundException
+} from '@nestjs/common'
+import { OrderStatus } from 'common/db'
+import { OrderEvents, OutboxEventData } from 'src/entities'
 import { OrdersRepository } from './orders.repository'
 
 @Injectable()
@@ -10,17 +16,29 @@ export class OrderService {
   constructor(private readonly orderRepository: OrdersRepository) {}
 
   async updateOrderAndAddEvent(orderId: string) {
-    const order = await this.orderRepository.getOrder(orderId)
+    try {
+      const order = await this.orderRepository.getOrder(orderId)
 
-    if (!order) throw new NotFoundException('Order not found')
+      if (!order) throw new NotFoundException('Order not found')
 
-    const orderEvent = new OrderPaidEventDTO()
-      .setType(OrderEvents.ORDER_PAID)
-      .setOrder(order.id, Number(order.amount))
+      if (order.status == OrderStatus.PAID)
+        throw new ForbiddenException('Order is already paid')
 
-    const response = await this.orderRepository.updateOrderToPaid(orderEvent)
+      const orderEvent = new OutboxEventData()
+        .setType(OrderEvents.ORDER_PAID)
+        .setOrder(order.id, Number(order.amount))
+        .setIdepotencyKey()
 
-    this.logger.debug(`Order ${order.id} changed status to paid`)
+      await this.orderRepository.updateOrderAndAddEvent(orderEvent)
+
+      this.logger.debug(`Order ${order.id} changed status to paid`)
+    } catch (error) {
+      if (error instanceof HttpException) throw error
+
+      this.logger.error(
+        `Error while changing order ${orderId} status: ${error}`
+      )
+    }
   }
 
   async seed() {

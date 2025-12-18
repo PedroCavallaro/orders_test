@@ -1,3 +1,5 @@
+import { AppManager } from 'common/manager'
+
 export class Queue<T> {
   private _queue: T[] = []
 
@@ -6,6 +8,8 @@ export class Queue<T> {
   }
 
   add(item: T) {
+    if (AppManager.getInstance().breakBroker()) throw new Error('Break broker')
+
     this._queue.push(item)
   }
 

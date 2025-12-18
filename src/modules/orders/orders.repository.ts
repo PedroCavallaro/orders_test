@@ -1,34 +1,39 @@
 import { Injectable } from '@nestjs/common'
 import { OrderStatus } from 'common/db/enum'
 import { DatabaseProvider } from 'common/db/module/db.provider'
-import { OrderPaidEventDTO } from './dto'
+import { OutboxEventData } from 'src/entities'
 
 @Injectable()
 export class OrdersRepository {
   constructor(private readonly db: DatabaseProvider) {}
 
-  async updateOrderToPaid(orderEvent: OrderPaidEventDTO) {
-    return await this.db.transaction().execute(async (trx) => {
-      const order = await trx
-        .updateTable('orders')
-        .set({
-          status: OrderStatus.PAID
-        })
-        .where('id', '=', orderEvent.orderId)
-        .returning('id')
-        .executeTakeFirst()
+  async updateOrderAndAddEvent(outboxEvent: OutboxEventData) {
+    try {
+      return await this.db.transaction().execute(async (trx) => {
+        const order = await trx
+          .updateTable('orders')
+          .set({
+            status: OrderStatus.PAID
+          })
+          .where('id', '=', outboxEvent.orderId)
+          .returning('id')
+          .executeTakeFirst()
 
-      const outbox = trx
-        .insertInto('outbox_events')
-        .values({
-          id: orderEvent.eventId,
-          event_data: JSON.stringify(orderEvent),
-          published: false
-        })
-        .executeTakeFirst()
+        const outbox = trx
+          .insertInto('outbox_events')
+          .values({
+            id: outboxEvent.eventId,
+            event_data: JSON.stringify(outboxEvent),
+            published: false,
+            dead: false
+          })
+          .executeTakeFirst()
 
-      return { order, outbox }
-    })
+        return { order, outbox }
+      })
+    } catch (error) {
+      return null
+    }
   }
 
   async getOrder(orderId: string) {

@@ -9,7 +9,8 @@ CREATE TABLE orders (
 CREATE TABLE outbox_events (
     id UUID PRIMARY KEY,
     event_data TEXT NOT NULL,
-    published BOOLEAN NOT NULL DEFAULT FALSE,
+    published BOOLEAN NOT NULL,
+    dead BOOLEAN NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
@@ -23,9 +24,6 @@ CREATE TABLE invoices (
 
 
 CREATE TABLE processed_events (
-    event_id UUID PRIMARY KEY,
-    processed_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    event_data TEXT NOT NULL,
-    published BOOLEAN NOT NULL DEFAULT FALSE,
-    ocurred_at TIMESTAMP NOT NULL
+    event_key VARCHAR(255) PRIMARY KEY,
+    processed_at TIMESTAMP NULL
 );

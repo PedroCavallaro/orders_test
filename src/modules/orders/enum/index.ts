@@ -1,1 +1,1 @@
-export * from './order-events.enum'
+export * from '../../../entities/orders/enum/order-events.enum'

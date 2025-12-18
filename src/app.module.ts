@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
-import { DatabaseModule } from 'common/db/module/db.module'
+import { DatabaseModule } from 'common/db'
 import { AppController } from './app.controller'
 import { OrdersModule } from './modules/orders'
 
