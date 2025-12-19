@@ -2,9 +2,7 @@ import { Logger } from '@nestjs/common'
 import { DatabaseProvider } from 'common/db'
 import { Queue } from 'common/queue'
 import { OutboxEventData } from 'src/entities'
-import { silenceLogs } from 'test/mock/log.mock'
 
-silenceLogs()
 export class HandleDuplicateEventsCommand {
   private readonly logger = new Logger()
 

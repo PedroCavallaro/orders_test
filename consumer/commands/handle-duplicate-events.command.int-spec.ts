@@ -10,6 +10,20 @@ import {
 } from 'test/automation/processed-events.automation'
 import { HandleDuplicateEventsCommand } from './handle-duplicate-events.command'
 
+jest.mock('@nestjs/common', () => {
+  const original = jest.requireActual('@nestjs/common')
+
+  return {
+    ...original,
+    Logger: jest.fn().mockImplementation(() => ({
+      log: jest.fn(),
+      error: jest.fn(),
+      warn: jest.fn(),
+      debug: jest.fn(),
+      verbose: jest.fn()
+    }))
+  }
+})
 describe('HandleDuplicateEventsCommand', () => {
   let db: DatabaseProvider
   let queue: jest.Mocked<Queue<OutboxEventData>>
