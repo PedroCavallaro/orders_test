@@ -17,23 +17,27 @@ export class OutboxWorker {
 
   async start() {
     while (this.running) {
-      try {
-        const outboxEvent: OutboxEvent | undefined = await this.db
-          .transaction()
-          .execute(this.getOutboxEvent)
+      await this.tick()
+    }
+  }
 
-        if (!outboxEvent) {
-          await sleep(1000)
+  async tick() {
+    try {
+      const outboxEvent: OutboxEvent | undefined = await this.db
+        .transaction()
+        .execute(this.getOutboxEvent)
 
-          continue
-        }
+      if (!outboxEvent) {
+        await sleep(1000)
 
-        await this.proccessOutboxEvent(outboxEvent)
-      } catch (error) {
-        this.logger.error(`Error on outbox worker ${error}`)
-
-        await sleep(10000)
+        return
       }
+
+      await this.proccessOutboxEvent(outboxEvent)
+    } catch (error) {
+      this.logger.error(`Error on outbox worker ${error}`)
+
+      await sleep(10000)
     }
   }
 

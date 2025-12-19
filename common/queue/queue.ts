@@ -8,12 +8,17 @@ export class Queue<T> {
   }
 
   add(item: T) {
-    if (AppManager.getInstance().breakBroker()) throw new Error('Break broker')
+    if (AppManager.getInstance().breakBrokerRandom())
+      throw new Error('Break broker')
 
     this._queue.push(item)
   }
 
   pop(): T | undefined {
+    return this._queue[0]
+  }
+
+  ack(): T | undefined {
     return this._queue.shift()
   }
 

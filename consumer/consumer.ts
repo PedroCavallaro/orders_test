@@ -1,9 +1,13 @@
 import { Logger } from '@nestjs/common'
 import { DatabaseProvider } from 'common/db'
+import { AppManager } from 'common/manager'
 import { Queue } from 'common/queue'
 import { sleep } from 'common/utils'
 import { OutboxEventData } from 'src/entities'
-import { GenerateOrderInvoice } from './commands'
+import {
+  GenerateOrderInvoiceCommand,
+  HandleDuplicateEventsCommand
+} from './commands'
 
 export class OutboxConsumer {
   private readonly logger = new Logger(OutboxConsumer.name)
@@ -15,36 +19,49 @@ export class OutboxConsumer {
 
   async start() {
     while (true) {
-      try {
-        const outboxEvent = this.ordersQueue.pop()
+      await this.tick()
+    }
+  }
 
-        if (!outboxEvent) {
-          await sleep(1000)
-          continue
-        }
+  async tick() {
+    try {
+      const outboxEvent = this.ordersQueue.pop()
 
-        const event = await this.checkForDuplicates(outboxEvent)
-        console.log(event)
-
-        if (!event) {
-          await sleep(1000)
-          continue
-        }
-
-        this.logger.debug(
-          `Consuming outboxEvent, event: ${outboxEvent.eventId}`
-        )
-
-        const command = new GenerateOrderInvoice(this.db, outboxEvent)
-
-        await command.exectue()
+      if (!outboxEvent) {
+        await sleep(1000)
 
         return
-        //@ts-ignore
-        await this.finishEventProcess(outboxEvent)
-      } catch (e) {
-        this.logger.error(`Error on outbox consumer ${e}`)
       }
+
+      const { duplicate } = await this.checkForDuplicates(outboxEvent)
+
+      if (duplicate) {
+        this.logger.debug(`Handling duplicate event ${outboxEvent.eventId}`)
+
+        const command = new HandleDuplicateEventsCommand(
+          this.db,
+          outboxEvent,
+          this.ordersQueue
+        )
+        await command.execute()
+
+        return
+      }
+
+      this.logger.debug(`Consuming outboxEvent, event: ${outboxEvent.eventId}`)
+
+      const command = new GenerateOrderInvoiceCommand(this.db, outboxEvent)
+      await command.exectue()
+
+      if (AppManager.getInstance().breakConsumerRandom()) {
+        return
+      }
+
+      await this.finishEventProcess(outboxEvent)
+
+      this.ordersQueue.ack()
+    } catch (e) {
+      this.logger.error(`Error on outbox consumer ${e}`)
     }
   }
 
@@ -60,19 +77,18 @@ export class OutboxConsumer {
 
   private async checkForDuplicates(outboxEvent: OutboxEventData) {
     try {
-      const event = await this.db
+      await this.db
         .insertInto('processed_events')
         .values({
-          event_key: outboxEvent.idempotencyKey
+          event_key: outboxEvent.idempotencyKey,
+          queue_attempts: 1
         })
         .execute()
 
-      return event
+      return { duplicate: false }
     } catch (e) {
       if (DatabaseProvider.getInstance().isPrimaryKeyError(e)) {
-        this.logger.debug(`Duplicate event ${outboxEvent.eventId}`)
-
-        return null
+        return { duplicate: true }
       }
 
       throw e

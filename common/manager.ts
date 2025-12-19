@@ -1,9 +1,19 @@
 //isso é só pra testes
+
+export class AppManagerDTO {
+  successOnAttempt: number
+  breakBroker: boolean
+  breakWorker: boolean
+  breakConsumer: boolean
+  duplicateEvents: boolean
+}
+
 export class AppManager {
   public successOnAttempt = 0
-  public _breakBroker = true
-  public _breakWorker = true
-  public duplicateEvents = true
+  public breakBroker = false
+  public breakWorker = false
+  public breakConsumer = false
+  public duplicateEvents = false
 
   static instance: AppManager
 
@@ -17,14 +27,20 @@ export class AppManager {
     return AppManager.instance
   }
 
-  breakWorker() {
-    if (!this._breakWorker) return false
+  breakConsumerRandom() {
+    if (!this.breakConsumer) return false
 
     return Math.random() < 0.5
   }
 
-  breakBroker() {
-    if (!this._breakBroker) return false
+  breakWorkerRadom() {
+    if (!this.breakWorker) return false
+
+    return Math.random() < 0.5
+  }
+
+  breakBrokerRandom() {
+    if (!this.breakBroker) return false
 
     return Math.random() < 0.5
   }

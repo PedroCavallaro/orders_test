@@ -8,31 +8,36 @@ export class OrdersRepository {
   constructor(private readonly db: DatabaseProvider) {}
 
   async updateOrderAndAddEvent(outboxEvent: OutboxEventData) {
+    const trx = await this.db.startTransaction().execute()
+
     try {
-      return await this.db.transaction().execute(async (trx) => {
-        const order = await trx
-          .updateTable('orders')
-          .set({
-            status: OrderStatus.PAID
-          })
-          .where('id', '=', outboxEvent.orderId)
-          .returning('id')
-          .executeTakeFirst()
+      const order = await trx
+        .updateTable('orders')
+        .set({
+          status: OrderStatus.PAID
+        })
+        .where('id', '=', outboxEvent.orderId)
+        .returning('id')
+        .executeTakeFirstOrThrow()
 
-        const outbox = trx
-          .insertInto('outbox_events')
-          .values({
-            id: outboxEvent.eventId,
-            event_data: JSON.stringify(outboxEvent),
-            published: false,
-            dead: false
-          })
-          .executeTakeFirst()
+      const outbox = await trx
+        .insertInto('outbox_events')
+        .values({
+          id: outboxEvent.eventId,
+          event_data: JSON.stringify(outboxEvent),
+          published: false,
+          dead: false,
+          order_id: outboxEvent.orderId
+        })
+        .executeTakeFirstOrThrow()
 
-        return { order, outbox }
-      })
-    } catch (error) {
-      return null
+      await trx.commit().execute()
+
+      return { order, outbox }
+    } catch (e) {
+      await trx.rollback().execute()
+
+      throw e
     }
   }
 
