@@ -44,6 +44,8 @@ npm run start:dev
 ## 🗄️ Modelagem de Dados
 
 Toda a modelagem de dados está dentro do arquivo init.sql
+Por ser um projeto simples, e pra ter mais velocidade optei por seguir assim
+Mas normalmente utilizaria migrations
 
 ---
 
