@@ -68,6 +68,7 @@ Toda a modelagem de dados está dentro do arquivo init.sql
     * Abordar mais casos de incosistência: A api ficou bem simples e não lida com muitos casos, apenas checar se a order existe e se ela já foi paga, mais em um ambiente real imagino que teriamos mais validações
     * Arquitetura do projeto: Como a simplicidade foi requisitada, optei por uma solução simples mas que funciona. em produção optaria por uma solução onde as regras de negócio e as camadas da aplicação ficassem bem escritas
     * Forma que buscamos os eventos: Atualmente é while true que checa por eventos, isso não é ideal pois gera consultas desnecessárias, acho que seria interessante utilizar algum tipo de CDC
+    * Retry: O retry ficou bem simples, apenas tenta executar o fluxo de publicação/atualização, mas isso pode gerar eventos duplicados, em produção eu buscaria deixar essa solução mais completa e com menos duplicações
 ---
 
 ## 🔨 Como testar e quebrar
