@@ -54,6 +54,7 @@ export class OutboxConsumer {
       await command.exectue()
 
       if (AppManager.getInstance().breakConsumerRandom()) {
+        this.logger.error('Break consumer')
         return
       }
 
