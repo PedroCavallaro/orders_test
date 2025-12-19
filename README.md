@@ -1,6 +1,13 @@
 
 # 📘 Outbox + Processamento Idempotente
+Pra simplificar deixei tudo em um unico projeto, mas minha idéia é que consumer, worker e api seriam serviços diferentes
+tanto que o consumer e o worker não seguem a estrutura do nest, apenas a api que segue
 
+Stack:
+* Nest na api
+* Typescript puro no worker/consumer (re-utilizei apenas o logger do nest, pra não precisar recriar)
+* Kysely como query builder
+* Queue in-memory como broker
 
 ## 🚀 Como Rodar o Projeto
 
