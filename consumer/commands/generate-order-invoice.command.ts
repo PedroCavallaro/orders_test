@@ -2,7 +2,7 @@ import { Logger } from '@nestjs/common'
 import { DatabaseProvider } from 'common/db/module'
 import { OutboxEventData } from 'src/entities'
 
-export class GenerateOrderInvoice {
+export class GenerateOrderInvoiceCommand {
   private readonly logger = new Logger()
 
   constructor(
@@ -18,7 +18,7 @@ export class GenerateOrderInvoice {
         order_id: this.outboxEvent.orderId,
         amount: this.outboxEvent.amount.toString()
       })
-      .returning('id')
+      .returning(['id', 'order_id'])
       .executeTakeFirst()
 
     this.logger.debug(

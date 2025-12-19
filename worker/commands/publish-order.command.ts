@@ -46,12 +46,12 @@ export class PublishOrderCommand {
     }
   }
 
-  private async addOnBrokerAndUpdateEvent() {
+  async addOnBrokerAndUpdateEvent() {
     const eventData = JSON.parse(this.outboxEvent.event_data)
 
     this.addOnQueue(eventData)
 
-    if (AppManager.getInstance().breakWorker()) {
+    if (AppManager.getInstance().breakWorkerRadom()) {
       this.logger.error('Worker broke')
 
       throw new AppManagerError()

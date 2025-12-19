@@ -2,6 +2,7 @@ import {
   ForbiddenException,
   HttpException,
   Injectable,
+  InternalServerErrorException,
   Logger,
   NotFoundException
 } from '@nestjs/common'
@@ -27,7 +28,7 @@ export class OrderService {
       const orderEvent = new OutboxEventData()
         .setType(OrderEvents.ORDER_PAID)
         .setOrder(order.id, Number(order.amount))
-        .setIdepotencyKey()
+        .setIdempotencyKey()
 
       await this.orderRepository.updateOrderAndAddEvent(orderEvent)
 
@@ -38,6 +39,8 @@ export class OrderService {
       this.logger.error(
         `Error while changing order ${orderId} status: ${error}`
       )
+
+      throw new InternalServerErrorException()
     }
   }
 

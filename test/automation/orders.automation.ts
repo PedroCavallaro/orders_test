@@ -2,6 +2,7 @@ import { DatabaseProvider, Order, OrderStatus } from 'common/db'
 
 export async function addRawOrder(order?: Partial<Order>) {
   const db = DatabaseProvider.getInstance()
+
   return await db
     .insertInto('orders')
     .values({
@@ -9,5 +10,16 @@ export async function addRawOrder(order?: Partial<Order>) {
       status: order?.status ?? OrderStatus.PENDING,
       amount: order?.amount ?? Math.floor(Math.random() * 2000).toString()
     })
+    .returningAll()
+    .executeTakeFirst()
+}
+
+export async function getOrder(id: string) {
+  const db = DatabaseProvider.getInstance()
+
+  return await db
+    .selectFrom('orders')
+    .selectAll()
+    .where('id', '=', id)
     .executeTakeFirst()
 }

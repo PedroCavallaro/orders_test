@@ -19,7 +19,7 @@ export class OutboxEventData {
     return this
   }
 
-  setIdepotencyKey() {
+  setIdempotencyKey() {
     this.idempotencyKey = `${this.orderId}-${this.eventType}`
 
     return this
