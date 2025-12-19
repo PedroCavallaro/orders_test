@@ -1,6 +1,7 @@
 import { INestApplication, LoggerService } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
-import { DatabaseProvider, OrderStatus } from 'common/db'
+import { DatabaseProvider } from 'common/db'
+import { OrderStatus } from 'src/entities'
 import {
   addRawOutboxEvent,
   getOutboxEvent

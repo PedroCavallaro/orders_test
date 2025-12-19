@@ -1,4 +1,5 @@
-import { DatabaseProvider, Order, OrderStatus } from 'common/db'
+import { DatabaseProvider, Order } from 'common/db'
+import { OrderStatus } from 'src/entities'
 
 export async function addRawOrder(order?: Partial<Order>) {
   const db = DatabaseProvider.getInstance()

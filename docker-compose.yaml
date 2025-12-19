@@ -14,23 +14,23 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: orders_outbox_api
-    restart: unless-stopped
-    depends_on:
-      - postgres
-    environment:
-      PORT: 3000
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_NAME: orders
-      DB_USER: orders
-      DB_PASSWORD: orders
-    ports:
-      - "3000:3000"
+   app:
+     build:
+       context: .
+       dockerfile: Dockerfile
+     container_name: orders_outbox_api
+     restart: unless-stopped
+     depends_on:
+       - postgres
+     environment:
+       PORT: 3000
+       DB_HOST: postgres
+       DB_PORT: 5432
+       DB_NAME: orders
+       DB_USER: orders
+       DB_PASSWORD: orders
+     ports:
+       - "3000:3000"
 
 volumes:
   pgdata:
