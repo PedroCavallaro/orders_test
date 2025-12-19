@@ -45,7 +45,7 @@ export class HandleDuplicateEventsCommand {
 
     if (event?.processed_at) {
       this.logger.debug(
-        `Event alreay processed, removindo from broker ${event.event_key}`
+        `Event alreay processed, removing from broker ${event.event_key}`
       )
 
       this.queue.ack()
