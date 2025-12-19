@@ -24,8 +24,6 @@ export class PublishOrderCommand {
 
       const response = await this.addOnBrokerAndUpdateEvent()
 
-      this.logger.debug(`Event published ${this.outboxEvent.id}`)
-
       return response
     } catch (e: unknown) {
       if (attempt >= 5) return this.onMaxRetries(e)
@@ -51,6 +49,8 @@ export class PublishOrderCommand {
 
     this.addOnQueue(eventData)
 
+    this.logger.debug(`Event published on broker ${this.outboxEvent.id}`)
+
     if (AppManager.getInstance().breakWorkerRadom()) {
       this.logger.error('Worker broke')
 
@@ -64,6 +64,8 @@ export class PublishOrderCommand {
       })
       .where('id', '=', this.outboxEvent.id)
       .executeTakeFirst()
+
+    this.logger.debug(`Event publised updated ${this.outboxEvent.id}`)
 
     return
   }

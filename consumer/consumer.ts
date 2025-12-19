@@ -44,6 +44,7 @@ export class OutboxConsumer {
           this.ordersQueue
         )
         await command.execute()
+        this.logger.debug(`Duplicate event handled ${outboxEvent.eventId}`)
 
         return
       }
@@ -74,6 +75,8 @@ export class OutboxConsumer {
       })
       .where('event_key', '=', outboxEvent.idempotencyKey)
       .execute()
+
+    this.logger.debug(`Event processed ${outboxEvent.idempotencyKey}`)
   }
 
   private async checkForDuplicates(outboxEvent: OutboxEventData) {
