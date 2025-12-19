@@ -25,10 +25,20 @@ export class HandleDuplicateEventsCommand {
       .where('event_key', '=', this.outboxEvent.idempotencyKey)
       .executeTakeFirst()
 
-    if (event && event?.queue_attempts >= 5) {
+    if (event?.processed_at) {
+      this.logger.debug(
+        `Event alreay processed, removing from broker ${event!.event_key}`
+      )
+
+      this.queue.ack()
+
+      return
+    }
+
+    if (event!.queue_attempts >= 5) {
       //Aqui seria interessante enviar pra outro lugar
       this.logger.debug(
-        `Max broker attempts reached for event ${event.event_key}`
+        `Max broker attempts reached for event ${event!.event_key}`
       )
 
       this.queue.ack()
@@ -40,15 +50,14 @@ export class HandleDuplicateEventsCommand {
       this.logger.debug(
         `Invoice not yet generated, keeping event on broker ${this.outboxEvent.eventId}`
       )
-      return
-    }
 
-    if (event?.processed_at) {
-      this.logger.debug(
-        `Event alreay processed, removing from broker ${event.event_key}`
-      )
-
-      this.queue.ack()
+      await this.db
+        .updateTable('processed_events')
+        .set({
+          queue_attempts: event!.queue_attempts + 1
+        })
+        .where('event_key', '=', event!.event_key)
+        .execute()
 
       return
     }

@@ -78,6 +78,11 @@ describe('HandleDuplicateEventsCommand', () => {
 
   it('Should keep event in queue when invoice does not exist', async () => {
     const order = await addRawOrder()
+    const eventKey = `${order!.id}-${OrderEvents.ORDER_PAID}`
+
+    await addRawProcessedEvent({
+      event_key: eventKey
+    })
 
     const outboxEvent: OutboxEventData = {
       ...outboxEventMock,
