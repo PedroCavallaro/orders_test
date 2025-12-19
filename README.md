@@ -30,6 +30,9 @@ cp .env.example  .env
 # Subir os serviços
 docker compose up -d
 
+# Instala as dependências
+npm install
+
 # Rodar os testes
 npm run test:int ou npm run test:e2e
 
