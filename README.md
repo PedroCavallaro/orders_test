@@ -59,7 +59,7 @@ Mas normalmente utilizaria migrations
   * Ele evita publicação concorrente atráves do `FOR UPDATE SKIP LOCKED`, mas o evento pode ser publicado novamente caso o `published` não seja alterado
 
 3. **Idempotência:** Como você implementou a idempotência no consumer? Qual é a chave idempotente usada?
-  * Salvo a chave do evento em processed_event como PK, dessa forma eu garanto que o evento vai ser processado apenas uma vez
+  * Salvo a chave do evento em processed_events como PK, e toda vez que um evento chega eu primeiro insiro ele na processed_events pra depois começar o tratamento. Dessa forma se der erro de PK, eu sei que aquele evento já passou pelo consumer não gero uma nova invoice, e trato esse evento duplicado 
   * A chave consiste em `${orderId}-${eventType}`, como o orderId não muda e a ordem só pode ser paga uma vez optei por essa chave
 
 4. **Ordem de operações:** Em que ordem você marca o evento como "publicado" e envia ao broker? Por que escolheu essa ordem?
