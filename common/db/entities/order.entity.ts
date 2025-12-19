@@ -1,5 +1,5 @@
 import { ColumnType, Generated, Selectable } from 'kysely'
-import { OrderStatus } from '../enum'
+import { OrderStatus } from 'src/entities'
 
 export interface OrderEntity {
   id: Generated<string>

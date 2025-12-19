@@ -6,8 +6,7 @@ import {
   Logger,
   NotFoundException
 } from '@nestjs/common'
-import { OrderStatus } from 'common/db'
-import { OrderEvents, OutboxEventData } from 'src/entities'
+import { OrderEvents, OrderStatus, OutboxEventData } from 'src/entities'
 import { OrdersRepository } from './orders.repository'
 
 @Injectable()

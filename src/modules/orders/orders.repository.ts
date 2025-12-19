@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import { OrderStatus } from 'common/db/enum'
 import { DatabaseProvider } from 'common/db/module/db.provider'
-import { OutboxEventData } from 'src/entities'
+import { OrderStatus, OutboxEventData } from 'src/entities'
 
 @Injectable()
 export class OrdersRepository {
