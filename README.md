@@ -15,7 +15,7 @@ cd <nome-do-projeto>
 docker compose up -d
 ```
 
-Se preferir rodar a aplicção fora do docker, é só comentar o serviço app no docker compose e rodare
+Se preferir rodar a aplicação fora do docker pra validar os testes ou só testar, é só comentar o serviço app no docker compose e rodar:
 
 ```
 cp .env.example  .env
@@ -23,6 +23,10 @@ cp .env.example  .env
 # Subir os serviços
 docker compose up -d
 
+# Rodar os testes
+npm run test:int ou npm run test:e2e
+
+# Rodar o projeto
 npm run start:dev
 ```
 ---
