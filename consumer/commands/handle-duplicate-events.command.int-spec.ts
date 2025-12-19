@@ -1,4 +1,3 @@
-import { Logger } from '@nestjs/common'
 import { DatabaseProvider } from 'common/db'
 import { Queue } from 'common/queue'
 import { OrderEvents, OutboxEventData } from 'src/entities'
@@ -29,8 +28,6 @@ describe('HandleDuplicateEventsCommand', () => {
   let queue: jest.Mocked<Queue<OutboxEventData>>
 
   beforeAll(async () => {
-    jest.spyOn(Logger.prototype, 'debug').mockImplementation(() => {})
-
     db = DatabaseProvider.getInstance()
   })
 
