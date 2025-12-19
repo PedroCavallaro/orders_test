@@ -143,6 +143,7 @@ common/ <-- recursos compartilhados
 worker/
 ├── commands/ <-- commands que vão lidar com a publicação e falha na publicação
 src/ <-- api
+├── entities/ <-- entitdades da aplicação e enums que vão ser utilizados por toda a aplicação
 ├── modules/ <-- modulos da api
 └── main.ts <-- entrypoint do projeto
 ```
