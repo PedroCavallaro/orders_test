@@ -36,7 +36,7 @@ Toda a modelagem de dados está dentro do arquivo init.sql
 ## 🧠 Respostas Técnicas
 
 1. **Atomicidade:** Onde no código está garantida a atomicidade entre atualizar `orders` e inserir o evento na outbox?
-    * A atomicidade está garantida dentro da transaction que atualiza a order a cria o outbox_event, isso está no arquivo 
+   * A atomicidade está garantida dentro da transaction que atualiza a order a cria o outbox_event, isso está no arquivo 
 
 2. **Publicação duplicada:** Como seu worker evita publicar o mesmo evento duas vezes? (Ou: se publicar 2x, por que isso não quebra o sistema?)
   * Eventos duplicados não qebram o sistema, pois o consumer é idempotente e tem tratativas para eventos duplicados
